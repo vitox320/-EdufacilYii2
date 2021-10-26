@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\helpers\ArrayHelper;
+use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "alunos".
@@ -20,8 +21,14 @@ use yii\helpers\ArrayHelper;
  * @property MateriaisCorrecao[] $materiaisCorrecaos
  * @property Notas[] $notas
  */
-class Alunos extends \yii\db\ActiveRecord
+class Alunos extends \yii\db\ActiveRecord implements IdentityInterface
 {
+
+    /**
+     * @var mixed|null
+     */
+    public $auth_key;
+
     /**
      * {@inheritdoc}
      */
@@ -98,6 +105,48 @@ class Alunos extends \yii\db\ActiveRecord
     {
 
         return $this->hasMany(Notas::class, ['not_id_alu' => 'alu_id_alu']);
+    }
+
+    public static function findIdentity($id)
+    {
+        return static::findOne($id);
+    }
+
+    /**
+     * Finds an identity by the given token.
+     *
+     * @param string $token the token to be looked for
+     * @return IdentityInterface|null the identity object that matches the given token.
+     */
+    public static function findIdentityByAccessToken($token, $type = null)
+    {
+        return static::findOne(['access_token' => $token]);
+    }
+
+    /**
+     * @return int|string current user ID
+     */
+    public function getId()
+    {
+        return $this->alu_id_alu;
+    }
+
+    /**
+     * @return string|null current user auth key
+     */
+    public function getAuthKey()
+    {
+        return $this->auth_key;
+    }
+
+
+    /**
+     * @param string $authKey
+     * @return bool|null if auth key is valid for current user
+     */
+    public function validateAuthKey($authKey)
+    {
+        return $this->getAuthKey() === $authKey;
     }
 
 }

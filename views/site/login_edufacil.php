@@ -34,6 +34,8 @@ use yii\bootstrap4\ActiveForm;
             </div>
         </div>
 
+        <?= \yii\helpers\Html::hiddenInput("grupo_usuario",$user) ?>
+
 
         <div class="form-group text-center" style="margin-left: 80px;">
             <div class="col-md-6 offset-3">
@@ -44,9 +46,8 @@ use yii\bootstrap4\ActiveForm;
                 <?php if ($user == "professor") { ?>
                     <button type="submit" class="btn-lg color-button-professor ">Entrar</button>
                 <?php } ?>
-
-
             </div>
+            <a href="<?= Yii::$app->urlManager->createUrl(["alunos/create"]); ?>">Já possui login? Cadastre-se agora! </a>
         </div>
 
     </div>

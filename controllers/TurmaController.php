@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Turma;
 use app\models\TurmaSearch;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,6 +22,18 @@ class TurmaController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'user' => 'aluno',
+                    'only' => ['create','index'],
+                    'rules' => [
+                        [
+                            'actions' => ['create','index'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::className(),
                     'actions' => [

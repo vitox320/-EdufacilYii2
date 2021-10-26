@@ -11,6 +11,7 @@ $config = [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
     ],
+    'homeUrl' => ['site/login'],
     'components' => [
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
@@ -32,9 +33,37 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
+            'class'=>'yii\web\User',
             'identityClass' => 'app\models\User',
-            'enableAutoLogin' => true,
+            'enableAutoLogin' => false,
+            'authTimeout' => 60*30,
+            'loginUrl' => ['site/login'],
+            'identityCookie' => [
+                'name' => '_panelUser',
+            ]
         ],
+        'aluno' => [
+            'class'=>'yii\web\User',
+            'identityClass' => 'app\models\Alunos',
+            'enableAutoLogin' => false,
+            'authTimeout' => 60*30,
+            'loginUrl' => ['site/login'],
+            'identityCookie' => [
+                'name' => '_UsuarioAluno',
+            ]
+        ],
+        'professor' => [
+            'class'=>'yii\web\User',
+            'identityClass' => 'app\models\Professores',
+            'enableAutoLogin' => false,
+            'authTimeout' => 60*30,
+            'loginUrl' => ['site/login'],
+            'identityCookie' => [
+                'name' => '_UsuarioProfessor',
+            ]
+        ],
+
+
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
