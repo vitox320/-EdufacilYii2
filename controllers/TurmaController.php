@@ -107,7 +107,7 @@ class TurmaController extends Controller
         $id_turma = Yii::$app->request->get("turma");
 
         $turma = Turma::findOne($id_turma);
-        $alunos = Alunos::find()->all();
+        $alunos = Alunos::find()->where(["is", "alu_id_tur", null])->all();
         $alunosVinculadosATurma = Turma::getAlunosVinculadosTurma($turma->tur_id_tur);
 
         return $this->render('view', [
