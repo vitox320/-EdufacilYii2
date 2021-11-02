@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\models\Alunos;
+use app\models\Professores;
 use http\Url;
 use Yii;
 use yii\filters\AccessControl;
@@ -86,26 +87,56 @@ class SiteController extends Controller
                     }
 
                     Yii::$app->aluno->login($alunos, 3600 * 24 * 30);
-                    return $this->redirect(["turma/create"]);
+                    return $this->redirect(["turma/index", "user" => "aluno"]);
 
                 }
 
                 if ($grupoUsuario == "professor") {
+                    $professor = Professores::find()->where(["pro_email_professor" => $emailUsuario])->one();
 
+                    if (is_null($professor)) {
+                        throw new \Exception("Usuário não existe!");
+                    }
+
+                    $valida_senha = Yii::$app->getSecurity()->validatePassword($senhaUsuario, $professor->pro_senha_professor);
+                    if ($valida_senha != true) {
+                        throw new \Exception("Senha Incorreta");
+                    }
+
+                    Yii::$app->professor->login($professor, 3600 * 24 * 30);
+                    return $this->redirect(["turma/index", "user" => "professor"]);
                 }
             } catch (\Exception $ex) {
-
                 Yii::$app->session->setFlash("danger", $ex->getMessage());
             }
-
-
         }
-
         return $this->render("login_edufacil", [
             "user" => $user
         ]);
     }
 
+
+    /**
+     * @throws \Exception
+     */
+    private static function actionInitPermissions()
+    {
+        $auth = Yii::$app->authManager;
+
+        /*       $user = $auth->createRole()
+               $professor = $auth->createRole('professor');
+               $aluno = $auth->createRole('aluno');
+
+               $auth->add($professor);
+               $auth->add($aluno);
+
+               $turmaCreate = $auth->createPermission('turma/create');
+               $turma*/
+
+        //Rotas liberadas para os alunos
+
+
+    }
 
     /**
      * Displays homepage.
@@ -140,12 +171,12 @@ class SiteController extends Controller
      *
      * @return Response
      */
-        public function actionLogout()
-        {
-            Yii::$app->aluno->logout();
+    public function actionLogout()
+    {
+        Yii::$app->aluno->logout();
 
-            return $this->goHome();
-        }
+        return $this->goHome();
+    }
 
     /**
      * Displays contact page.

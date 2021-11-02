@@ -23,6 +23,7 @@ class AppAsset extends AssetBundle
         'css/sidebars.css',
         'css/site.css',
         'css/app.css',
+        'css/fontaw5/css/all.css'
     ];
 
     public $js = [
@@ -32,5 +33,6 @@ class AppAsset extends AssetBundle
         'yii\web\YiiAsset',
         'yii\bootstrap4\BootstrapAsset',
         '\rmrevin\yii\fontawesome\AssetBundle'
+
     ];
 }

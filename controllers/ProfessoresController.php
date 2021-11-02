@@ -2,8 +2,11 @@
 
 namespace app\controllers;
 
+use app\components\util\UtilText;
 use app\models\Professores;
 use app\models\ProfessoresSearch;
+use Yii;
+use yii\base\BaseObject;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -13,6 +16,8 @@ use yii\filters\VerbFilter;
  */
 class ProfessoresController extends Controller
 {
+
+    public $layout = 'layout_edufacil';
     /**
      * @inheritDoc
      */
@@ -66,18 +71,53 @@ class ProfessoresController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Professores();
+        $professor = new Professores();
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'pro_id_pro' => $model->pro_id_pro]);
+        if (Yii::$app->request->isPost) {
+
+            $email = Yii::$app->request->post("Professores")["pro_email_professor"];
+            $nome = Yii::$app->request->post("Professores")["pro_nome_professor"];
+            $senha = Yii::$app->request->post("Professores")["pro_senha_professor"];
+            $confirma_senha = Yii::$app->request->post("confirma_senha");
+
+            $transaction = Yii::$app->db->beginTransaction();
+            $professor = new Professores();
+
+            try {
+                $valida_email = filter_var($email, FILTER_SANITIZE_EMAIL);
+                if ($valida_email == false) {
+                    throw new \Exception("Email inserido não é válido");
+                }
+                $valida_nome = filter_var($nome, FILTER_SANITIZE_SPECIAL_CHARS);
+
+                $valida_senha = filter_var($senha, FILTER_SANITIZE_SPECIAL_CHARS);
+                $valida_confirma_senha = filter_var($confirma_senha, FILTER_SANITIZE_SPECIAL_CHARS);
+
+                if ($valida_senha != $valida_confirma_senha) {
+                    throw  new \Exception("As senhas inseridas precisam ser iguais");
+                }
+
+                $professor->pro_email_professor = $valida_email;
+                $professor->pro_nome_professor = $valida_nome;
+                $professor->pro_senha_professor = Yii::$app->getSecurity()->generatePasswordHash($valida_senha);
+                if (!$professor->save()) {
+                    throw new \Exception(UtilText::msgTextException($professor, "Professores"));
+                }
+                $transaction->commit();
+                Yii::$app->session->setFlash("success", "<h4>Aluno Registrado com sucesso </h4>");
+                return $this->redirect(["site/login","user"=>"professor"]);
+
+            } catch (\Exception $ex) {
+                $transaction->rollBack();
+                Yii::$app->session->setFlash("danger", $ex->getMessage());
+                //Yii::$app->session->setFlash("danger",UtilText::msgTextFlash($ex));
             }
-        } else {
-            $model->loadDefaultValues();
+
+
         }
 
         return $this->render('create', [
-            'model' => $model,
+            'professor' => $professor,
         ]);
     }
 

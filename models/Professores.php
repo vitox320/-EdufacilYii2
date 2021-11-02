@@ -18,6 +18,7 @@ use yii\web\IdentityInterface;
  */
 class Professores extends \yii\db\ActiveRecord implements IdentityInterface
 {
+    public $auth_key;
     /**
      * {@inheritdoc}
      */
@@ -91,7 +92,7 @@ class Professores extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function getId()
     {
-        return $this->id;
+        return $this->pro_id_pro;
     }
 
     /**

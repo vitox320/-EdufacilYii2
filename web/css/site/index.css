@@ -1,9 +1,11 @@
 .container-titulos {
     margin-bottom: -200px;
 }
-.titulo-edufacil{
+
+.titulo-edufacil {
     margin-bottom: 20px;
 }
+
 .container-principal {
     width: 600px;
     height: 600px;
@@ -26,9 +28,9 @@
     font-weight: bold;
     color: #fff;
     text-decoration: none;
-
 }
-a{
+
+a {
     text-decoration: none;
 }
 

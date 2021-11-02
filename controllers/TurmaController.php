@@ -2,8 +2,12 @@
 
 namespace app\controllers;
 
+use app\components\util\UtilText;
+use app\models\Alunos;
 use app\models\Turma;
 use app\models\TurmaSearch;
+use Yii;
+use yii\db\Exception;
 use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
@@ -14,6 +18,9 @@ use yii\filters\VerbFilter;
  */
 class TurmaController extends Controller
 {
+
+    public $layout = 'layout_edufacil';
+
     /**
      * @inheritDoc
      */
@@ -22,18 +29,18 @@ class TurmaController extends Controller
         return array_merge(
             parent::behaviors(),
             [
-                'access' => [
-                    'class' => AccessControl::className(),
-                    'user' => 'aluno',
-                    'only' => ['create','index'],
-                    'rules' => [
-                        [
-                            'actions' => ['create','index'],
-                            'allow' => true,
-                            'roles' => ['@'],
-                        ],
-                    ],
-                ],
+                /*            'access' => [
+                                'class' => AccessControl::className(),
+                                'user' => 'aluno',
+                                'only' => ['create','index'],
+                                'rules' => [
+                                    [
+                                        'actions' => ['create','index'],
+                                        'allow' => true,
+                                        'roles' => ['@'],
+                                    ],
+                                ],
+                            ],*/
                 'verbs' => [
                     'class' => VerbFilter::className(),
                     'actions' => [
@@ -50,26 +57,94 @@ class TurmaController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new TurmaSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $turma = new Turma();
+        $turmas = Turma::find()->all();
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            'turmaModel' => $turma,
+            'turmas' => $turmas ?? null,
+
         ]);
+    }
+
+    public function actionCadastraTurma()
+    {
+        if (is_null(Yii::$app->professor->getIdentity())) {
+            return $this->redirect(["index"]);
+        }
+        if (Yii::$app->request->isPost) {
+            try {
+                $turma = new Turma();
+                $transaction = Yii::$app->db->beginTransaction();
+
+                $nomeTurma = filter_var(Yii::$app->request->post("Turma")["tur_nom_turma"], FILTER_SANITIZE_SPECIAL_CHARS);
+
+                $turma->tur_nom_turma = $nomeTurma;
+                $turma->tur_id_pro = Yii::$app->professor->getIdentity()->pro_id_pro;
+
+                if (!$turma->save()) {
+                    $transaction->rollBack();
+                    throw new \Exception(UtilText::msgTextException($turma, "Turma"));
+                }
+
+                $transaction->commit();
+                Yii::$app->session->setFlash("success", "Turma cadastrada com sucesso!");
+                return $this->redirect(["index", "user" => "professor"]);
+            } catch (\Exception $ex) {
+                Yii::$app->session->setFlash("danger", UtilText::msgTextFlash($ex));
+                $this->redirect(["index", "user" => "professor"]);
+            }
+        }
     }
 
     /**
      * Displays a single Turma model.
-     * @param int $tur_id_tur Tur Id Tur
      * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * @throws Exception
      */
-    public function actionView($tur_id_tur)
+    public function actionView()
     {
+        $id_turma = Yii::$app->request->get("turma");
+
+        $turma = Turma::findOne($id_turma);
+        $alunos = Alunos::find()->all();
+        $alunosVinculadosATurma = Turma::getAlunosVinculadosTurma($turma->tur_id_tur);
+
         return $this->render('view', [
-            'model' => $this->findModel($tur_id_tur),
+            'turma' => $turma ?? null,
+            'alunos' => $alunos ?? null,
+            'id_turma' => $id_turma ?? null,
+            'alunosVinculadosATurma' => $alunosVinculadosATurma ?? null
         ]);
+    }
+
+    public function actionVinculaAlunoTurma()
+    {
+        Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $id_turma = Yii::$app->request->post("id_turma");
+        $id_aluno = Yii::$app->request->post("id_aluno");
+
+        $aluno = Alunos::findOne($id_aluno);
+        $turma = Turma::findOne($id_turma);
+        $transaction = Yii::$app->db->beginTransaction();
+        try {
+            $aluno->alu_id_tur = $id_turma;
+            $aluno->alu_id_pro = $turma->tur_id_pro;
+            if (!$aluno->save()) {
+                throw new Exception(UtilText::msgTextException(new Turma(), "Turma"));
+            }
+
+            $transaction->commit();
+            Yii::$app->session->setFlash("success", "Aluno Inserido com sucesso");
+            return $this->redirect(["turma/view", "turma" => $id_turma]);
+
+        } catch (\Exception $ex) {
+            $transaction->rollBack();
+            Yii::$app->session->setFlash(UtilText::msgTextFlash($ex));
+            return $this->redirect(["turma/view", "turma" => $id_turma]);
+        }
+
     }
 
     /**

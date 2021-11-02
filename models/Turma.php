@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use yii\db\Exception;
 
 /**
  * This is the model class for table "turma".
@@ -77,5 +78,14 @@ class Turma extends \yii\db\ActiveRecord
     public function getTurIdPro()
     {
         return $this->hasOne(Professores::class, ['pro_id_pro' => 'tur_id_pro']);
+    }
+
+    /**
+     * @throws Exception
+     */
+    public static function getAlunosVinculadosTurma(int $id_turma)
+    {
+        $sql = "SELECT * FROM alunos LEFT JOIN notas ON not_id_alu = alu_id_alu WHERE alu_id_tur = $id_turma";
+        return Yii::$app->db->createCommand($sql)->queryAll();
     }
 }

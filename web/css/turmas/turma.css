@@ -1,0 +1,59 @@
+.text-container-titulos {
+    margin-bottom: -200px;
+}
+
+.titulo-edufacil {
+    margin-bottom: 20px;
+}
+
+.adicionar {
+    margin-left: 500px;
+    cursor: pointer;
+}
+
+.container-principal {
+    width: 600px;
+    height: 600px;
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.caixa-escolha {
+    cursor: pointer;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    width: 300px;
+    height: 120px;
+
+    text-align: center;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    background-color: #4F647F;
+    margin-left: 10px;
+
+}
+
+a {
+    text-decoration: none;
+}
+
+.aluno {
+    background-color: #4F647F;
+}
+
+.professor {
+    background-color: #5EA96E;
+}
+
+#turma-tur_nom_turma {
+    border-top: none;
+    border-right: none;
+    border-left: none;
+}
+

@@ -24,6 +24,9 @@ $config = [
                 '<module:\w+>/<controller:\w+>/<action:\w+>' => '<module>/<controller>/<action>',
             ],
         ],
+        'authManager' => [
+            'class' => 'yii\rbac\DbManager',
+        ],
 
         'request' => [
             // !!! insert a secret key in the following (if it is empty) - this is required by cookie validation
@@ -32,6 +35,7 @@ $config = [
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],
+
         'user' => [
             'class'=>'yii\web\User',
             'identityClass' => 'app\models\User',
