@@ -11,7 +11,7 @@
     cursor: pointer;
 }
 
-.container-principal {
+/*.container-principal {
     width: 600px;
     height: 600px;
     display: flex;
@@ -19,7 +19,7 @@
     flex-direction: column;
     align-items: center;
     margin: 0 auto;
-}
+}*/
 
 .caixa-escolha {
     cursor: pointer;

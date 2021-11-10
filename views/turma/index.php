@@ -11,28 +11,32 @@ $this->registerCssFile("@web/css/turmas/turma.css");
 ?>
 
 
-    <div class="container-principal">
+    <div class="container" style="margin-top: 12%;">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h2 class="titulo-edufacil"> Turmas </h2>
 
-        <div class="text-container-titulos">
-
-            <h2 class="titulo-edufacil"> Turmas </h2>
-
+                <?php if (!is_null(Yii::$app->professor->getIdentity())) { ?>
+                    <i class="fas fa-plus-square adicionar fa-2x" data-toggle="modal" data-target="#exampleModalCenter"></i>
+                <?php } ?>
+            </div>
         </div>
-        <?php if (!is_null(Yii::$app->professor->getIdentity())) { ?>
-            <i class="fas fa-plus-square adicionar fa-2x" data-toggle="modal" data-target="#exampleModalCenter"></i>
-        <?php } ?>
 
-        <div class="d-flex justify-content-between w-75">
+
+        <div class="row d-flex justify-content-center mt-5">
             <?php if (sizeof($turmas) > 0) { ?>
                 <?php foreach ($turmas as $turma): ?>
-                    <a href="<?= Yii::$app->urlManager->createUrl(["turma/view","turma" => $turma["tur_id_tur"]]) ?>" class="caixa-escolha ">
-                        <?= $turma['tur_nom_turma'] ?>
-                    </a>
+                    <div class="col-md-4">
+                        <a href="<?= Yii::$app->urlManager->createUrl(["turma/view", "turma" => $turma["tur_id_tur"]]) ?>"
+                           class="caixa-escolha ">
+                            <?= $turma['tur_nom_turma'] ?>
+                        </a>
+                    </div>
+
                 <?php endforeach; ?>
             <?php } else { ?>
                 <h4 style="margin-top: -200px">Você ainda não foi incluído em nenhuma turma.</h4>
             <?php } ?>
-
         </div>
 
     </div>
