@@ -4,6 +4,7 @@ namespace app\models;
 
 use Yii;
 use yii\db\Exception;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "turma".
@@ -78,6 +79,11 @@ class Turma extends \yii\db\ActiveRecord
     public function getTurIdPro()
     {
         return $this->hasOne(Professores::class, ['pro_id_pro' => 'tur_id_pro']);
+    }
+
+    public static function buscaTodasAsTurmas()
+    {
+        return ArrayHelper::map(self::find()->all(),"tur_id_tur","tur_nom_turma");
     }
 
     /**

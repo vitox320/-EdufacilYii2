@@ -2,8 +2,15 @@
 
 namespace app\controllers;
 
+use app\components\util\UtilText;
+use app\models\TesteQuestoes;
 use app\models\Testes;
 use app\models\TestesSearch;
+use app\models\Turma;
+use Exception;
+use Yii;
+use yii\base\BaseObject;
+use widewhale\debug\vardumper\components\VarDumper;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -30,7 +37,6 @@ class TestesController extends Controller
             ]
         );
     }
-
 
 
     /**
@@ -69,17 +75,71 @@ class TestesController extends Controller
     public function actionCreate()
     {
         $model = new Testes();
+        $todasAsTurmasOptions = Turma::buscaTodasAsTurmas();
+        if (Yii::$app->request->isPost) {
+            $quantidadeEnunciados = sizeof(Yii::$app->request->post("TesteQuestoes")["tqu_enunciado"]);
+            $quantidadeAlternativas = sizeof(Yii::$app->request->post("TesteQuestoes")["tqu_alternativa"]);
 
-        if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'tes_id_tes' => $model->tes_id_tes]);
+
+            $titulo = Yii::$app->request->post("Testes")["tes_nome_teste"];
+            $turma = Yii::$app->request->post("Turma")["tur_id_tur"];
+
+            $transaction = Yii::$app->db->beginTransaction();
+            try {
+                $tituloVerificado = filter_var($titulo, FILTER_SANITIZE_SPECIAL_CHARS);
+                if (!$tituloVerificado) {
+                    throw new Exception("Insira um título válido");
+                }
+                $testes = new Testes();
+                $testes->tes_nome_teste = $tituloVerificado;
+                $testes->tes_id_tur = $turma;
+                $testes->tes_valor_teste = $quantidadeEnunciados;
+                $testes->tes_unidade_teste = null;
+                if (!$testes->save()) {
+                    throw new \Exception(UtilText::msgTextException($testes, "Testes"));
+                }
+
+
+                for ($j = 0; $j < $quantidadeEnunciados; $j++) {
+
+                    $enunciadoVerificado = filter_var(Yii::$app->request->post("TesteQuestoes")["tqu_enunciado"][$j], FILTER_SANITIZE_SPECIAL_CHARS);
+
+                    if (!$enunciadoVerificado) {
+                        throw new \Exception("Insira um enunciado válido");
+                    }
+
+                    for ($i = 0; $i < $quantidadeAlternativas; $i++) {
+                        $alternativasVerificadas = filter_var(Yii::$app->request->post("TesteQuestoes")["tqu_alternativa"][$i], FILTER_SANITIZE_SPECIAL_CHARS);
+                        if (!$alternativasVerificadas) {
+                            throw new \Exception("Insira alternativas válidas");
+                        }
+                        $testesQuestoes = new TesteQuestoes();
+                        $testesQuestoes->tqu_enunciado = $enunciadoVerificado;
+                        $testesQuestoes->tqu_alternativa = $alternativasVerificadas;
+                        $testesQuestoes->tqu_gabaritos = Yii::$app->request->post("gabarito")[$i];
+                        $testesQuestoes->tqu_valor = 1;
+                        $testesQuestoes->tqu_id_tes = $testes->tes_id_tes;
+                        if (!$testesQuestoes->save()) {
+                            throw new \Exception(UtilText::msgTextException($testesQuestoes, "TesteQuestoes"));
+                        }
+                    }
+                }
+                $transaction->commit();
+                Yii::$app->session->setFlash("success", "<h4> <b> Teste Criado com sucesso!! </b> </h4>");
+                return $this->redirect("create");
+            } catch (\Exception $ex) {
+                Yii::$app->session->setFlash("danger", $ex->getMessage());
+                $transaction->rollBack();
+
             }
-        } else {
-            $model->loadDefaultValues();
+
+            /*var_dump($quantidadeEnunciados);
+            var_dump($quantidadeAlternativas);die;*/
         }
 
         return $this->render('create', [
             'model' => $model,
+            'todasAsTurmasOptions' => $todasAsTurmasOptions
         ]);
     }
 
