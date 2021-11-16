@@ -14,13 +14,12 @@ class m211017_143633_criar_tabela_teste_questoes extends Migration
     {
         $this->createTable("teste_questoes", [
             "tqu_id_tqu" => $this->primaryKey(),
-            "tqu_enunciado" => $this->text(),
-            "tqu_alternativa"=> $this->text(),
+            "tqu_alternativa" => $this->text(),
             "tqu_gabaritos" => $this->char("2"),
-            "tqu_valor" => $this->float(),
-            "tqu_id_tes" => $this->integer()
+            "tqu_id_enu" => $this->integer()
         ]);
-        $this->addForeignKey("tqu_id_tes","teste_questoes","tqu_id_tes","testes","tes_id_tes");
+
+        $this->addForeignKey("tqu_id_enu", "teste_questoes", "tqu_id_enu", "enunciados", "enu_id_enu");
     }
 
     /**
@@ -28,7 +27,7 @@ class m211017_143633_criar_tabela_teste_questoes extends Migration
      */
     public function safeDown()
     {
-        $this->dropForeignKey("tqu_id_tes","teste_questoes");
+        $this->dropForeignKey("tqu_id_enu", "teste_questoes");
         $this->dropTable("teste_questoes");
     }
 

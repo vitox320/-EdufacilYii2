@@ -62,7 +62,7 @@ $form = ActiveForm::begin();
 
                 <div class="row">
                     <div class="col-md-12">
-                        <?= $form->field(new TesteQuestoes(), "tqu_enunciado[]")->textInput(['placeholder' => "Enunciado"])->label(""); ?>
+                        <?= $form->field($enunciados, "enu_nom_enunciado[]")->textInput(['placeholder' => "Enunciado"])->label(""); ?>
                     </div>
                 </div>
                 <div class="row">

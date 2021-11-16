@@ -8,13 +8,11 @@ use Yii;
  * This is the model class for table "teste_questoes".
  *
  * @property int $tqu_id_tqu
- * @property string|null $tqu_enunciado
  * @property string|null $tqu_alternativa
  * @property string|null $tqu_gabaritos
- * @property float|null $tqu_valor
- * @property int|null $tqu_id_tes
+ * @property int|null $tqu_id_enu
  *
- * @property Testes $tquIdTes
+ * @property Enunciados $tquIdEnu
  */
 class TesteQuestoes extends \yii\db\ActiveRecord
 {
@@ -32,11 +30,10 @@ class TesteQuestoes extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['tqu_enunciado', 'tqu_alternativa'], 'string'],
-            [['tqu_valor'], 'number'],
-            [['tqu_id_tes'], 'integer'],
+            [['tqu_alternativa'], 'string'],
+            [['tqu_id_enu'], 'integer'],
             [['tqu_gabaritos'], 'string', 'max' => 2],
-            [['tqu_id_tes'], 'exist', 'skipOnError' => true, 'targetClass' => Testes::class, 'targetAttribute' => ['tqu_id_tes' => 'tes_id_tes']],
+            [['tqu_id_enu'], 'exist', 'skipOnError' => true, 'targetClass' => Enunciados::className(), 'targetAttribute' => ['tqu_id_enu' => 'enu_id_enu']],
         ];
     }
 
@@ -47,21 +44,19 @@ class TesteQuestoes extends \yii\db\ActiveRecord
     {
         return [
             'tqu_id_tqu' => 'Tqu Id Tqu',
-            'tqu_enunciado' => 'Tqu Enunciado',
             'tqu_alternativa' => 'Tqu Alternativa',
             'tqu_gabaritos' => 'Tqu Gabaritos',
-            'tqu_valor' => 'Tqu Valor',
-            'tqu_id_tes' => 'Tqu Id Tes',
+            'tqu_id_enu' => 'Tqu Id Enu',
         ];
     }
 
     /**
-     * Gets query for [[TquIdTes]].
+     * Gets query for [[TquIdEnu]].
      *
      * @return \yii\db\ActiveQuery
      */
-    public function getTquIdTes()
+    public function getTquIdEnu()
     {
-        return $this->hasOne(Testes::class, ['tes_id_tes' => 'tqu_id_tes']);
+        return $this->hasOne(Enunciados::className(), ['enu_id_enu' => 'tqu_id_enu']);
     }
 }

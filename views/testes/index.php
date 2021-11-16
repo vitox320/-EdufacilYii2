@@ -7,34 +7,47 @@ use yii\grid\GridView;
 /* @var $searchModel app\models\TestesSearch */
 /* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = 'Testes';
-$this->params['breadcrumbs'][] = $this->title;
+$this->title = 'Atividades';
+
 ?>
 <div class="testes-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="row mb-5">
+        <div class="col-md-12 text-center">
+            <h1><?= Html::encode($this->title) ?></h1>
+        </div>
 
-    <p>
-        <?= Html::a('Create Testes', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
+    </div>
 
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <?= GridView::widget([
-        'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'tes_id_tes',
-            'tes_nome_teste',
-            'tes_id_tur',
-            'tes_valor_teste',
-            'tes_unidade_teste',
-
-            ['class' => 'yii\grid\ActionColumn'],
-        ],
-    ]); ?>
+    <?php foreach ($testes as $atvTestes): ?>
 
 
+        <a href="<?= Yii::$app->urlManager->createUrl(["testes/ver-teste", "id_teste" => $atvTestes["tes_id_tes"]]) ?>">
+            <div class="container bg-white p-5 mt-5 shadow">
+                <div class="row">
+                    <div class="col-md-2">
+                        <h2><?= $atvTestes["tes_id_tes"] ?></h2>
+                    </div>
+                    <div class="col-md-8">
+                        <h2> <?= $atvTestes["tes_nome_teste"] ?></h2>
+                    </div>
+                    <div class="col-md-2 d-flex flex-column text-center">
+                        <span><?= date('j F,Y'); ?></span>
+                        <span><?= date('H:i:s'); ?></span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    <?php endforeach; ?>
 </div>
+
+<style>
+    a {
+        text-decoration: none !important;
+    }
+
+    span {
+        color: #506580 !important;
+        font-weight: bold;
+    }
+</style>

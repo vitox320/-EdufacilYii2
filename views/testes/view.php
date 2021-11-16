@@ -1,40 +1,68 @@
 <?php
 
+use app\models\TesteQuestoes;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+use yii\grid\GridView;
+use yii\widgets\ActiveForm;
 
 /* @var $this yii\web\View */
-/* @var $model app\models\Testes */
+/* @var $searchModel app\models\TestesSearch */
+/* @var $dataProvider yii\data\ActiveDataProvider */
 
-$this->title = $model->tes_id_tes;
-$this->params['breadcrumbs'][] = ['label' => 'Testes', 'url' => ['index']];
-$this->params['breadcrumbs'][] = $this->title;
-\yii\web\YiiAsset::register($this);
+$this->title = 'Testes';
+
 ?>
-<div class="testes-view">
+<div class="testes-index">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <div class="row mb-5">
+        <div class="col-md-12 text-center">
+            <h1><?= Html::encode($this->title) ?></h1>
+        </div>
 
-    <p>
-        <?= Html::a('Update', ['update', 'tes_id_tes' => $model->tes_id_tes], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'tes_id_tes' => $model->tes_id_tes], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => 'Are you sure you want to delete this item?',
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
+    </div>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'tes_id_tes',
-            'tes_nome_teste',
-            'tes_id_tur',
-            'tes_valor_teste',
-            'tes_unidade_teste',
-        ],
-    ]) ?>
+    <?php ActiveForm::begin([
+        "id" => "form-avaliacao"
+    ]); ?>
 
+    <?= Html::hiddenInput("id_teste", $id_teste) ?>
+    <?php $alternativaNameCount = 0; ?>
+    <?php foreach ($enunciados as $enunciado): ?>
+        <div class="container bg-white p-5 mt-5 shadow">
+            <div class="row">
+                <div class="col-md-12">
+                    <p class="text-justify">
+                        <?= $enunciado["enu_nom_enunciado"] ?>
+                    </p>
+                </div>
+
+            </div>
+            <?php $alternativas = TesteQuestoes::find()->where(["tqu_id_enu" => $enunciado["enu_id_enu"]])->all(); ?>
+
+            <div class="alternativas">
+                <?php
+                $alternativaNameCount++
+                ?>
+                <?php foreach ($alternativas as $testeQuestoes): ?>
+
+                    <div class="row">
+                        <div class="col-md-12 mt-3">
+                            <input type="radio" name="gabaritos<?= $alternativaNameCount ?>[]"
+                                   id="<?= $testeQuestoes["tqu_id_tqu"] ?>"
+                                   value="<?= $testeQuestoes["tqu_gabaritos"] ?>"> <?= $testeQuestoes["tqu_alternativa"] ?>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+
+            </div>
+        </div>
+    <?php endforeach; ?>
+
+    <div class="row">
+        <div class="col-md-12 text-right mt-3">
+            <button type="submit" class="btn-lg btn-info ">Terminar Teste</button>
+        </div>
+    </div>
+
+    <?php ActiveForm::end(); ?>
 </div>

@@ -3,6 +3,7 @@
 namespace app\controllers;
 
 use app\components\util\UtilText;
+use app\models\Enunciados;
 use app\models\TesteQuestoes;
 use app\models\Testes;
 use app\models\TestesSearch;
@@ -45,25 +46,45 @@ class TestesController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new TestesSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        /*$searchModel = new TestesSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);*/
+
+        $testes = Testes::find()->all();
 
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            'testes' => $testes
         ]);
     }
 
+
     /**
      * Displays a single Testes model.
-     * @param int $tes_id_tes Tes Id Tes
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($tes_id_tes)
+    public function actionVerTeste()
     {
+
+        $id_teste = Yii::$app->request->get("id_teste");
+
+        $enunciados = Enunciados::find()->where(["enu_id_tes" => $id_teste])->all();
+
+        if (Yii::$app->request->isPost) {
+            $id_teste = Yii::$app->request->post("id_teste");
+            $enunciados = Enunciados::find()->where(["enu_id_tes" => $id_teste])->all();
+
+
+            for ($i = 1; $i <= sizeof($enunciados); $i++) {
+
+                $alternativas = Yii::$app->request->post("gabaritos")[$i];
+
+                dump($alternativas);
+            }
+            die;
+
+        }
+
         return $this->render('view', [
-            'model' => $this->findModel($tes_id_tes),
+            'enunciados' => $enunciados,
+            "id_teste" => $id_teste
         ]);
     }
 
@@ -76,8 +97,9 @@ class TestesController extends Controller
     {
         $model = new Testes();
         $todasAsTurmasOptions = Turma::buscaTodasAsTurmas();
+        $enunciados = new Enunciados();
         if (Yii::$app->request->isPost) {
-            $quantidadeEnunciados = sizeof(Yii::$app->request->post("TesteQuestoes")["tqu_enunciado"]);
+            $quantidadeEnunciados = sizeof(Yii::$app->request->post("Enunciados")["enu_nom_enunciado"]);
             $quantidadeAlternativas = sizeof(Yii::$app->request->post("TesteQuestoes")["tqu_alternativa"]);
 
 
@@ -99,26 +121,30 @@ class TestesController extends Controller
                     throw new \Exception(UtilText::msgTextException($testes, "Testes"));
                 }
 
-
                 for ($j = 0; $j < $quantidadeEnunciados; $j++) {
 
-                    $enunciadoVerificado = filter_var(Yii::$app->request->post("TesteQuestoes")["tqu_enunciado"][$j], FILTER_SANITIZE_SPECIAL_CHARS);
-
+                    $enunciadoVerificado = filter_var(Yii::$app->request->post("Enunciados")["enu_nom_enunciado"][$j], FILTER_SANITIZE_SPECIAL_CHARS);
                     if (!$enunciadoVerificado) {
                         throw new \Exception("Insira um enunciado válido");
                     }
 
-                    for ($i = 0; $i < $quantidadeAlternativas; $i++) {
+                    $enunciados = new Enunciados();
+                    $enunciados->enu_nom_enunciado = $enunciadoVerificado;
+                    $enunciados->enu_valor = 1;
+                    $enunciados->enu_id_tes = $testes->tes_id_tes;
+                    if (!$enunciados->save()) {
+                        throw new \Exception(UtilText::msgTextException($enunciados, "Enunciados"));
+                    }
+
+                    for ($i = 0; $i < 5; $i++) {
                         $alternativasVerificadas = filter_var(Yii::$app->request->post("TesteQuestoes")["tqu_alternativa"][$i], FILTER_SANITIZE_SPECIAL_CHARS);
                         if (!$alternativasVerificadas) {
                             throw new \Exception("Insira alternativas válidas");
                         }
                         $testesQuestoes = new TesteQuestoes();
-                        $testesQuestoes->tqu_enunciado = $enunciadoVerificado;
                         $testesQuestoes->tqu_alternativa = $alternativasVerificadas;
                         $testesQuestoes->tqu_gabaritos = Yii::$app->request->post("gabarito")[$i];
-                        $testesQuestoes->tqu_valor = 1;
-                        $testesQuestoes->tqu_id_tes = $testes->tes_id_tes;
+                        $testesQuestoes->tqu_id_enu = $enunciados->enu_id_enu;
                         if (!$testesQuestoes->save()) {
                             throw new \Exception(UtilText::msgTextException($testesQuestoes, "TesteQuestoes"));
                         }
@@ -139,6 +165,7 @@ class TestesController extends Controller
 
         return $this->render('create', [
             'model' => $model,
+            'enunciados' => $enunciados,
             'todasAsTurmasOptions' => $todasAsTurmasOptions
         ]);
     }

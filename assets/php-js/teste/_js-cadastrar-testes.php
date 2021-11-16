@@ -28,7 +28,7 @@ $js = <<< JS
             
             const inputEnunciado = document.createElement("input");
             inputEnunciado.setAttribute("type","text");
-            inputEnunciado.setAttribute("name","TesteQuestoes[tqu_enunciado][]");
+            inputEnunciado.setAttribute("name","Enunciados[enu_nom_enunciado][]");
             inputEnunciado.setAttribute("placeholder","Enunciado");
             inputEnunciado.classList.add("form-control");     
             inputEnunciado.classList.add("mt-4");     
