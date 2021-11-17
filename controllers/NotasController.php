@@ -2,8 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\Alunos;
 use app\models\Notas;
 use app\models\NotasSearch;
+use app\models\Turma;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -37,12 +39,20 @@ class NotasController extends Controller
      */
     public function actionIndex()
     {
-        $searchModel = new NotasSearch();
-        $dataProvider = $searchModel->search($this->request->queryParams);
+        $id_aluno = \Yii::$app->aluno->getIdentity();
 
+        $notas = null;
+        $turmas = null;
+
+        if (!is_null($id_aluno)) {
+            $aluno = Alunos::find()->where(["alu_id_alu" => $id_aluno->alu_id_alu])->one();
+            if (!is_null($aluno["alu_id_tur"])) {
+                $turmas = Turma::find()->where(["tur_id_tur" => $aluno["alu_id_tur"]])->all();
+            }
+        }
         return $this->render('index', [
-            'searchModel' => $searchModel,
-            'dataProvider' => $dataProvider,
+            "notas" => $notas ?? null,
+            "turmas" => $turmas ?? null
         ]);
     }
 

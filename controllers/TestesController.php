@@ -67,12 +67,13 @@ class TestesController extends Controller
             $id_teste = Yii::$app->request->get("id_teste");
             $enunciados = Enunciados::find()->where(["enu_id_tes" => $id_teste])->all();
             $id_aluno = Yii::$app->aluno->getIdentity()->alu_id_alu;
-            if (!filter_var($id_teste, FILTER_SANITIZE_NUMBER_INT)) {
+            if (!filter_var($id_teste, FILTER_SANITIZE_SPECIAL_CHARS)) {
                 return $this->redirect(["ver-teste", "error" => "Id Inválido"]);
             }
             $verificaSeAlunoJaFezTeste = Notas::find()->where(["not_id_tes" => $id_teste])->andWhere(["not_id_alu" => $id_aluno])->all();
 
-            if (!is_null($verificaSeAlunoJaFezTeste)) {
+            if (!sizeof($verificaSeAlunoJaFezTeste) == 0) {
+                Yii::$app->session->setFlash("warning", "Usuário já efetuou a prova");
                 return $this->redirect(["index"]);
             }
 
@@ -83,12 +84,12 @@ class TestesController extends Controller
 
 
         if (Yii::$app->request->isPost) {
-            $transaction = Yii::$app->db->transaction;
+            $transaction = Yii::$app->db->beginTransaction();
             try {
 
                 $id_teste = Yii::$app->request->post("id_teste");
 
-                if (filter_var($id_teste, FILTER_SANITIZE_NUMBER_INT)) {
+                if (!filter_var($id_teste, FILTER_SANITIZE_SPECIAL_CHARS)) {
                     throw new Exception("O teste precisa de um ID válido");
                 }
 

@@ -52,6 +52,19 @@ class Notas extends \yii\db\ActiveRecord
     }
 
     /**
+     * @throws \yii\db\Exception
+     */
+    public static function buscarNotasDasTurmas(int $id_turma)
+    {
+        $sql = "SELECT * FROM notas 
+                LEFT JOIN testes ON tes_id_tes = not_id_tes
+                LEFT JOIN turma ON tes_id_tur = tur_id_tur
+                WHERE tes_id_tur = $id_turma";
+
+        return Yii::$app->db->createCommand($sql)->queryAll();
+    }
+
+    /**
      * Gets query for [[NotIdAlu]].
      *
      * @return \yii\db\ActiveQuery
