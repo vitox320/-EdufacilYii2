@@ -37,6 +37,16 @@ $form = ActiveForm::begin();
             ])->label(""); ?>
         </div>
 
+        <div class="col-md-4">
+            <?= $form->field(new Testes(), 'tes_unidade_teste')->widget(Select2::class, [
+                'data' => [1 => "A1", 2 => "A2"],
+                'options' => ['placeholder' => 'Selecione a unidade do teste ...'],
+                'pluginOptions' => [
+                    'allowClear' => true
+                ],
+            ])->label(""); ?>
+        </div>
+
     </div>
 
 
@@ -70,7 +80,8 @@ $form = ActiveForm::begin();
                         <?= $form->field(new TesteQuestoes(), "tqu_alternativa[]")->textInput(['placeholder' => "Alternativa 1"])->label(""); ?>
                     </div>
                     <div class="col-md-4 mt-5">
-                        Resposta Verdadeira: <input type="checkbox" name="gabarito[]" class="cl_gabarito" value="1" checked>
+                        Resposta Verdadeira: <input type="checkbox" name="gabarito[]" class="cl_gabarito" value="1"
+                                                    checked>
                         Resposta Falsa: <input type="checkbox" name="gabarito[]" class="cl_gabarito" value="0">
                     </div>
                 </div>

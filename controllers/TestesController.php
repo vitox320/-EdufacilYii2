@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\components\util\UtilText;
 use app\models\Enunciados;
+use app\models\Notas;
 use app\models\TesteQuestoes;
 use app\models\Testes;
 use app\models\TestesSearch;
@@ -62,23 +63,62 @@ class TestesController extends Controller
      */
     public function actionVerTeste()
     {
+        try {
+            $id_teste = Yii::$app->request->get("id_teste");
+            $enunciados = Enunciados::find()->where(["enu_id_tes" => $id_teste])->all();
+            $id_aluno = Yii::$app->aluno->getIdentity()->alu_id_alu;
+            if (!filter_var($id_teste, FILTER_SANITIZE_NUMBER_INT)) {
+                return $this->redirect(["ver-teste", "error" => "Id Inválido"]);
+            }
+            $verificaSeAlunoJaFezTeste = Notas::find()->where(["not_id_tes" => $id_teste])->andWhere(["not_id_alu" => $id_aluno])->all();
 
-        $id_teste = Yii::$app->request->get("id_teste");
+            if (!is_null($verificaSeAlunoJaFezTeste)) {
+                return $this->redirect(["index"]);
+            }
 
-        $enunciados = Enunciados::find()->where(["enu_id_tes" => $id_teste])->all();
+        } catch (Exception $ex) {
+            Yii::$app->session->setFlash("danger", $ex->getMessage());
+            return $this->redirect(["index"]);
+        }
+
 
         if (Yii::$app->request->isPost) {
-            $id_teste = Yii::$app->request->post("id_teste");
-            $enunciados = Enunciados::find()->where(["enu_id_tes" => $id_teste])->all();
+            $transaction = Yii::$app->db->transaction;
+            try {
 
+                $id_teste = Yii::$app->request->post("id_teste");
 
-            for ($i = 1; $i <= sizeof($enunciados); $i++) {
+                if (filter_var($id_teste, FILTER_SANITIZE_NUMBER_INT)) {
+                    throw new Exception("O teste precisa de um ID válido");
+                }
 
-                $alternativas = Yii::$app->request->post("gabaritos")[$i];
+                $enunciados = Enunciados::find()->where(["enu_id_tes" => $id_teste])->all();
+                $valorProva = 0;
 
-                dump($alternativas);
+                for ($i = 1; $i <= sizeof($enunciados); $i++) {
+
+                    $alternativas = Yii::$app->request->post("gabaritos$i");
+
+                    if ($alternativas[0] == 1) {
+                        $valorProva++;
+                    };
+                }
+
+                $notas = new Notas();
+                $notas->not_id_alu = Yii::$app->aluno->getIdentity()->alu_id_alu;
+                $notas->not_id_tes = $id_teste;
+                $notas->not_valor_nota = $valorProva;
+                if (!$notas->save()) {
+                    throw new Exception(UtilText::msgTextException($notas, "Notas"));
+                }
+
+                $transaction->commit();
+                Yii::$app->session->setFlash("success", "<h4> <strong> Teste Realizado com sucesso </strong> </h4>");
+                $this->redirect(["testes/index"]);
+            } catch (Exception $ex) {
+                Yii::$app->session->setFlash("danger", $ex->getMessage());
+                $transaction->rollBack();
             }
-            die;
 
         }
 
@@ -98,6 +138,14 @@ class TestesController extends Controller
         $model = new Testes();
         $todasAsTurmasOptions = Turma::buscaTodasAsTurmas();
         $enunciados = new Enunciados();
+
+        $id_professor = Yii::$app->professor->getIdentity();
+        $id_aluno = Yii::$app->aluno->getIdentity();
+
+        if (is_null($id_professor) && is_null($id_aluno)) {
+            return $this->redirect(["site/index", "user" => "nao_autenticado"]);
+        }
+
         if (Yii::$app->request->isPost) {
             $quantidadeEnunciados = sizeof(Yii::$app->request->post("Enunciados")["enu_nom_enunciado"]);
             $quantidadeAlternativas = sizeof(Yii::$app->request->post("TesteQuestoes")["tqu_alternativa"]);
@@ -105,7 +153,7 @@ class TestesController extends Controller
 
             $titulo = Yii::$app->request->post("Testes")["tes_nome_teste"];
             $turma = Yii::$app->request->post("Turma")["tur_id_tur"];
-
+            $unidade = Yii::$app->request->post("Testes")["tes_unidade_teste"];
             $transaction = Yii::$app->db->beginTransaction();
             try {
                 $tituloVerificado = filter_var($titulo, FILTER_SANITIZE_SPECIAL_CHARS);
@@ -116,7 +164,7 @@ class TestesController extends Controller
                 $testes->tes_nome_teste = $tituloVerificado;
                 $testes->tes_id_tur = $turma;
                 $testes->tes_valor_teste = $quantidadeEnunciados;
-                $testes->tes_unidade_teste = null;
+                $testes->tes_unidade_teste = $unidade;
                 if (!$testes->save()) {
                     throw new \Exception(UtilText::msgTextException($testes, "Testes"));
                 }

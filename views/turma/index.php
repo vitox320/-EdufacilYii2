@@ -5,7 +5,7 @@
 use app\models\Turma;
 use yii\bootstrap4\ActiveForm;
 
-$this->title = 'My Yii Application';
+$this->title = 'Turmas';
 $this->registerCssFile("@web/css/turmas/turma.css");
 
 ?>
@@ -17,14 +17,15 @@ $this->registerCssFile("@web/css/turmas/turma.css");
                 <h2 class="titulo-edufacil"> Turmas </h2>
 
                 <?php if (!is_null(Yii::$app->professor->getIdentity())) { ?>
-                    <i class="fas fa-plus-square adicionar fa-2x" data-toggle="modal" data-target="#exampleModalCenter"></i>
+                    <i class="fas fa-plus-square adicionar fa-2x" data-toggle="modal"
+                       data-target="#exampleModalCenter"></i>
                 <?php } ?>
             </div>
         </div>
 
 
         <div class="row d-flex justify-content-center mt-5">
-            <?php if (sizeof($turmas) > 0) { ?>
+            <?php if (!is_null($turmas)) { ?>
                 <?php foreach ($turmas as $turma): ?>
                     <div class="col-md-4">
                         <a href="<?= Yii::$app->urlManager->createUrl(["turma/view", "turma" => $turma["tur_id_tur"]]) ?>"

@@ -1,6 +1,7 @@
 <?php
 
 /* @var $this \yii\web\View */
+
 /* @var $content string */
 
 use app\assets\AppAsset;
@@ -38,7 +39,17 @@ AppAsset::register($this);
     </div>
 </main>
 
-<footer class="footer mt-auto py-3 text-muted">
+<?php
+$corSideBar = null;
+$user = Yii::$app->request->get("user");
+
+if (!is_null(Yii::$app->professor->getIdentity())) {
+    $corSideBar = "bg-success";
+
+}
+
+?>
+<footer class="footer mt-auto py-3 text-muted <?= $corSideBar ?>">
     <div class="container text-center">
 
         <p class="text-white">Edufácil <?= date('Y') ?></p>

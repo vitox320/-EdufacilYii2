@@ -57,9 +57,28 @@ class TurmaController extends Controller
      */
     public function actionIndex()
     {
-        $turma = new Turma();
-        $turmas = Turma::find()->all();
+        $turmas = null;
 
+        $id_professor = Yii::$app->professor->getIdentity();
+        $id_aluno = Yii::$app->aluno->getIdentity();
+
+        if (is_null($id_professor) && is_null($id_aluno)) {
+            return $this->redirect(["site/index", "user" => "nao_autenticado"]);
+        }
+
+        if (!is_null($id_professor)) {
+            $turmas = Turma::find()->where(["tur_id_pro" => $id_professor->pro_id_pro])->all();
+        }
+
+        if (!is_null($id_aluno)) {
+            $aluno = Alunos::find()->where(["alu_id_alu" => $id_aluno->alu_id_alu])->one();
+            if (!is_null($aluno["alu_id_tur"])) {
+                $turmas = Turma::find()->where(["tur_id_tur" => $aluno["alu_id_tur"]])->all();
+            }
+        }
+
+
+        $turma = new Turma();
         return $this->render('index', [
             'turmaModel' => $turma,
             'turmas' => $turmas ?? null,
@@ -104,6 +123,15 @@ class TurmaController extends Controller
      */
     public function actionView()
     {
+        $turmas = null;
+
+        $id_professor = Yii::$app->professor->getIdentity();
+
+
+        if (is_null($id_professor)) {
+            return $this->redirect(["site/index", "user" => "nao_autenticado"]);
+        }
+
         $id_turma = Yii::$app->request->get("turma");
 
         $turma = Turma::findOne($id_turma);
