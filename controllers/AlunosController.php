@@ -30,7 +30,7 @@ class AlunosController extends Controller
             [
                 'access' => [
                     'class' => AccessControl::className(),
-                    'user' => 'aluno',
+                    'user' => 'user',
                     'only' => ['logout'],
                     'rules' => [
                         [

@@ -31,7 +31,7 @@ class TurmaController extends Controller
             [
                 'access' => [
                     'class' => AccessControl::className(),
-                    'user' => 'aluno',
+                    'user' => 'user',
                     'only' => ['create', 'index'],
                     'rules' => [
                         [
