@@ -14,10 +14,10 @@ class m211017_143330_criar_tabela_professores extends Migration
     {
         $this->createTable("professores", [
             "pro_id_pro" => $this->primaryKey(),
-            "pro_nome_professor" => $this->string(45),
-            "pro_email_professor" => $this->string(45),
-            "pro_senha_professor" => $this->string(220)
+            "pro_id_usu" => $this->integer()
         ]);
+
+        $this->addForeignKey("pro_id_usu", "professores", "pro_id_usu", "usuarios", "usu_id_usu");
     }
 
     /**
@@ -25,6 +25,7 @@ class m211017_143330_criar_tabela_professores extends Migration
      */
     public function safeDown()
     {
+        $this->dropForeignKey("pro_id_usu", "professores");
         $this->dropTable("professores");
     }
 

@@ -39,17 +39,8 @@ AppAsset::register($this);
     </div>
 </main>
 
-<?php
-$corSideBar = null;
-$user = Yii::$app->request->get("user");
 
-if (!is_null(Yii::$app->professor->getIdentity())) {
-    $corSideBar = "bg-success";
-
-}
-
-?>
-<footer class="footer mt-auto py-3 text-muted <?= $corSideBar ?>">
+<footer class="footer mt-auto py-3 text-muted">
     <div class="container text-center">
 
         <p class="text-white">Edufácil <?= date('Y') ?></p>

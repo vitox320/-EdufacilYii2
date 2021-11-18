@@ -38,7 +38,7 @@ $config = [
 
         'user' => [
             'class'=>'yii\web\User',
-            'identityClass' => 'app\models\User',
+            'identityClass' => 'app\models\Usuarios',
             'enableAutoLogin' => false,
             'authTimeout' => 60*30,
             'loginUrl' => ['site/login'],
@@ -46,26 +46,7 @@ $config = [
                 'name' => '_panelUser',
             ]
         ],
-        'aluno' => [
-            'class'=>'yii\web\User',
-            'identityClass' => 'app\models\Alunos',
-            'enableAutoLogin' => false,
-            'authTimeout' => 60*30,
-            'loginUrl' => ['site/login'],
-            'identityCookie' => [
-                'name' => '_UsuarioAluno',
-            ]
-        ],
-        'professor' => [
-            'class'=>'yii\web\User',
-            'identityClass' => 'app\models\Professores',
-            'enableAutoLogin' => false,
-            'authTimeout' => 60*30,
-            'loginUrl' => ['site/login'],
-            'identityCookie' => [
-                'name' => '_UsuarioProfessor',
-            ]
-        ],
+
 
 
         'errorHandler' => [

@@ -2,7 +2,9 @@
 
 namespace app\models;
 
-class User extends Alunos
+use yii\web\IdentityInterface;
+
+class User implements IdentityInterface
 {
     public $id;
     public $username;
@@ -35,7 +37,7 @@ class User extends Alunos
      * Finds an identity by the given token.
      *
      * @param string $token the token to be looked for
-     * @return IdentityInterface|null the identity object that matches the given token.
+     * @return User the identity object that matches the given token.
      */
     public static function findIdentityByAccessToken($token, $type = null) {
         return static::findOne(['access_token' => $token]);
@@ -47,4 +49,18 @@ class User extends Alunos
      * @param string $username
      * @return static|null
      */
+    public function getId()
+    {
+        // TODO: Implement getId() method.
+    }
+
+    public function getAuthKey()
+    {
+        // TODO: Implement getAuthKey() method.
+    }
+
+    public function validateAuthKey($authKey)
+    {
+        // TODO: Implement validateAuthKey() method.
+    }
 }

@@ -3,22 +3,19 @@
 namespace app\models;
 
 use Yii;
-use yii\web\IdentityInterface;
 
 /**
  * This is the model class for table "professores".
  *
  * @property int $pro_id_pro
- * @property string|null $pro_nome_professor
- * @property string|null $pro_email_professor
- * @property string|null $pro_senha_professor
+ * @property int|null $pro_id_usu
  *
  * @property Alunos[] $alunos
+ * @property Usuarios $proIdUsu
  * @property Turma[] $turmas
  */
-class Professores extends \yii\db\ActiveRecord implements IdentityInterface
+class Professores extends \yii\db\ActiveRecord
 {
-    public $auth_key;
     /**
      * {@inheritdoc}
      */
@@ -33,8 +30,8 @@ class Professores extends \yii\db\ActiveRecord implements IdentityInterface
     public function rules()
     {
         return [
-            [['pro_nome_professor', 'pro_email_professor'], 'string', 'max' => 45],
-            [['pro_senha_professor'], 'string', 'max' => 220],
+            [['pro_id_usu'], 'integer'],
+            [['pro_id_usu'], 'exist', 'skipOnError' => true, 'targetClass' => Usuarios::className(), 'targetAttribute' => ['pro_id_usu' => 'usu_id_usu']],
         ];
     }
 
@@ -45,9 +42,7 @@ class Professores extends \yii\db\ActiveRecord implements IdentityInterface
     {
         return [
             'pro_id_pro' => 'Pro Id Pro',
-            'pro_nome_professor' => 'Pro Nome Professor',
-            'pro_email_professor' => 'Pro Email Professor',
-            'pro_senha_professor' => 'Pro Senha Professor',
+            'pro_id_usu' => 'Pro Id Usu',
         ];
     }
 
@@ -58,7 +53,17 @@ class Professores extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function getAlunos()
     {
-        return $this->hasMany(Alunos::class, ['alu_id_pro' => 'pro_id_pro']);
+        return $this->hasMany(Alunos::className(), ['alu_id_pro' => 'pro_id_pro']);
+    }
+
+    /**
+     * Gets query for [[ProIdUsu]].
+     *
+     * @return \yii\db\ActiveQuery
+     */
+    public function getProIdUsu()
+    {
+        return $this->hasOne(Usuarios::className(), ['usu_id_usu' => 'pro_id_usu']);
     }
 
     /**
@@ -68,48 +73,6 @@ class Professores extends \yii\db\ActiveRecord implements IdentityInterface
      */
     public function getTurmas()
     {
-        return $this->hasMany(Turma::class, ['tur_id_pro' => 'pro_id_pro']);
+        return $this->hasMany(Turma::className(), ['tur_id_pro' => 'pro_id_pro']);
     }
-
-    public static function findIdentity($id)
-    {
-        return static::findOne($id);
-    }
-
-    /**
-     * Finds an identity by the given token.
-     *
-     * @param string $token the token to be looked for
-     * @return IdentityInterface|null the identity object that matches the given token.
-     */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
-        return static::findOne(['access_token' => $token]);
-    }
-
-    /**
-     * @return int|string current user ID
-     */
-    public function getId()
-    {
-        return $this->pro_id_pro;
-    }
-
-    /**
-     * @return string|null current user auth key
-     */
-    public function getAuthKey()
-    {
-        return $this->auth_key;
-    }
-
-    /**
-     * @param string $authKey
-     * @return bool|null if auth key is valid for current user
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->getAuthKey() === $authKey;
-    }
-
 }

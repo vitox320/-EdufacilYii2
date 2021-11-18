@@ -51,7 +51,6 @@ class TestesController extends Controller
         $dataProvider = $searchModel->search($this->request->queryParams);*/
 
         $testes = Testes::find()->all();
-
         return $this->render('index', [
             'testes' => $testes
         ]);

@@ -4,6 +4,7 @@ namespace app\controllers;
 
 use app\models\Alunos;
 use app\models\Professores;
+use app\models\Usuarios;
 use http\Url;
 use Yii;
 use yii\filters\AccessControl;
@@ -69,43 +70,27 @@ class SiteController extends Controller
         }
 
         if (Yii::$app->request->isPost) {
-            $grupoUsuario = Yii::$app->request->post("grupo_usuario");
+            $user = Yii::$app->request->post("user");
             $emailUsuario = Yii::$app->request->post("LoginForm")["username"];
             $senhaUsuario = Yii::$app->request->post("LoginForm")["password"];
 
             try {
-                if ($grupoUsuario == "aluno") {
-                    $alunos = Alunos::find()->where(["alu_email_alunos" => $emailUsuario])->one();
 
-                    if (is_null($alunos)) {
-                        throw new \Exception("Usuário não existe!");
-                    }
+                $usuarios = Usuarios::find()->where(["usu_email_usuario" => $emailUsuario])->one();
 
-                    $valida_senha = Yii::$app->getSecurity()->validatePassword($senhaUsuario, $alunos->alu_senha_alunos);
-                    if ($valida_senha != true) {
-                        throw new \Exception("Senha Incorreta");
-                    }
-
-                    Yii::$app->aluno->login($alunos, 3600 * 24 * 30);
-                    return $this->redirect(["turma/index", "user" => "aluno"]);
-
+                if (is_null($usuarios)) {
+                    throw new \Exception("Usuário não existe!");
                 }
 
-                if ($grupoUsuario == "professor") {
-                    $professor = Professores::find()->where(["pro_email_professor" => $emailUsuario])->one();
-
-                    if (is_null($professor)) {
-                        throw new \Exception("Usuário não existe!");
-                    }
-
-                    $valida_senha = Yii::$app->getSecurity()->validatePassword($senhaUsuario, $professor->pro_senha_professor);
-                    if ($valida_senha != true) {
-                        throw new \Exception("Senha Incorreta");
-                    }
-
-                    Yii::$app->professor->login($professor, 3600 * 24 * 30);
-                    return $this->redirect(["turma/index", "user" => "professor"]);
+                $valida_senha = Yii::$app->getSecurity()->validatePassword($senhaUsuario, $usuarios->usu_senha_usuario);
+                if ($valida_senha != true) {
+                    throw new \Exception("Senha Incorreta");
                 }
+
+                Yii::$app->user->login($usuarios, 3600 * 24 * 30);
+                return $this->redirect(["turma/index", "user" => "$user"]);
+
+
             } catch (\Exception $ex) {
                 Yii::$app->session->setFlash("danger", $ex->getMessage());
             }
@@ -173,7 +158,7 @@ class SiteController extends Controller
      */
     public function actionLogout()
     {
-        Yii::$app->aluno->logout();
+        Yii::$app->user->logout();
 
         return $this->goHome();
     }

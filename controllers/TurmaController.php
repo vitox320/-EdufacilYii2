@@ -59,19 +59,21 @@ class TurmaController extends Controller
     {
         $turmas = null;
 
-        $id_professor = Yii::$app->professor->getIdentity();
-        $id_aluno = Yii::$app->aluno->getIdentity();
+        $id_professor = Yii::$app->user->getIdentity()->professores;
+        $id_aluno = Yii::$app->user->getIdentity()->alunos;
+
+        //var_dump($id_aluno,$id_professor);die;
 
         if (is_null($id_professor) && is_null($id_aluno)) {
             return $this->redirect(["site/index", "user" => "nao_autenticado"]);
         }
 
         if (!is_null($id_professor)) {
-            $turmas = Turma::find()->where(["tur_id_pro" => $id_professor->pro_id_pro])->all();
+            $turmas = Turma::find()->where(["tur_id_pro" => $id_professor])->all();
         }
 
         if (!is_null($id_aluno)) {
-            $aluno = Alunos::find()->where(["alu_id_alu" => $id_aluno->alu_id_alu])->one();
+            $aluno = Alunos::find()->where(["alu_id_alu" => $id_aluno])->one();
             if (!is_null($aluno["alu_id_tur"])) {
                 $turmas = Turma::find()->where(["tur_id_tur" => $aluno["alu_id_tur"]])->all();
             }
@@ -136,6 +138,7 @@ class TurmaController extends Controller
 
         $turma = Turma::findOne($id_turma);
         $alunos = Alunos::find()->where(["is", "alu_id_tur", null])->all();
+
         $alunosVinculadosATurma = Turma::getAlunosVinculadosTurma($turma->tur_id_tur);
 
         return $this->render('view', [

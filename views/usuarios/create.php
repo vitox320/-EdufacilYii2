@@ -14,6 +14,8 @@ use yii\bootstrap4\ActiveForm;
 ]); ?>
 
 
+<?= \yii\helpers\Html::hiddenInput("user", $user) ?>
+
     <div class="container d-flex justify-content-center align-center flex-column login-f">
 
         <h1 class="text-center" style="margin-left: 80px;"> Edufácil</h1>
@@ -21,7 +23,7 @@ use yii\bootstrap4\ActiveForm;
 
         <div class="form-group text-center">
             <div class="col-md-6 offset-md-3">
-                <?= $form->field($alunos, 'alu_email_alunos', [
+                <?= $form->field($model, 'usu_email_usuario', [
                     "inputOptions" => [
                         "placeholder" => "Email",
                         "type" => "email",
@@ -34,7 +36,7 @@ use yii\bootstrap4\ActiveForm;
 
         <div class="form-group text-center">
             <div class="col-md-6 offset-md-3 center-block">
-                <?= $form->field($alunos, 'alu_nome_alunos', [
+                <?= $form->field($model, 'usu_nom_usuario', [
                     "inputOptions" => [
                         "placeholder" => "Insira o nome",
                         "type" => "text",
@@ -47,7 +49,7 @@ use yii\bootstrap4\ActiveForm;
 
         <div class="form-group d-flex flex-column text-center">
             <div class="col-md-6 offset-md-3">
-                <?= $form->field($alunos, 'alu_senha_alunos', [
+                <?= $form->field($model, 'usu_senha_usuario', [
                     "inputOptions" => [
                         "placeholder" => "Senha",
                         "type" => "password",
@@ -59,7 +61,7 @@ use yii\bootstrap4\ActiveForm;
         </div>
         <div class="form-group">
             <div class="col-md-6 offset-md-3 text-center">
-                <?= $form->field($alunos, 'alu_senha_alunos', [
+                <?= $form->field($model, 'usu_senha_usuario', [
                     "inputOptions" => [
                         "placeholder" => "Confirma Senha",
                         "type" => "password",
@@ -71,7 +73,6 @@ use yii\bootstrap4\ActiveForm;
                 <span class="confirma-senha-validator text-danger d-none">Campo Inválido</span>
             </div>
         </div>
-
 
 
         <div class="form-group text-center" style="margin-left: 80px;">
