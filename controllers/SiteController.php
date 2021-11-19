@@ -5,7 +5,6 @@ namespace app\controllers;
 use app\models\Alunos;
 use app\models\Professores;
 use app\models\Usuarios;
-use http\Url;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;

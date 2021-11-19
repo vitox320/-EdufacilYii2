@@ -19,6 +19,8 @@ use yii\filters\VerbFilter;
  */
 class UsuariosController extends Controller
 {
+
+    public $layout = 'layout_edufacil';
     /**
      * @inheritDoc
      */

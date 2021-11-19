@@ -7,6 +7,7 @@ use app\models\Notas;
 use app\models\NotasSearch;
 use app\models\Turma;
 use Yii;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -24,6 +25,18 @@ class NotasController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'user' => 'user',
+                    'only' => ['create', 'index'],
+                    'rules' => [
+                        [
+                            'actions' => ['create', 'index', 'delete', 'update'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::className(),
                     'actions' => [

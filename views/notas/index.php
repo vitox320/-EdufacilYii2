@@ -41,7 +41,8 @@ $this->title = 'Notas';
 
                     <div class="informacoes-notas">
                         <h3>Média</h3>
-                        <h3><?= $contagemNotas / sizeof($notas); ?></h3>
+                        <?php $media = $contagemNotas / sizeof($notas) ?>
+                        <h3><?= $media ?></h3>
                     </div>
 
                 </div>
