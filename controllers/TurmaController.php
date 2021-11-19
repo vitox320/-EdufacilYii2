@@ -19,7 +19,7 @@ use yii\filters\VerbFilter;
 class TurmaController extends Controller
 {
 
-    public $layout = 'layout_edufacil';
+
 
     /**
      * @inheritDoc
@@ -57,23 +57,23 @@ class TurmaController extends Controller
      */
     public function actionIndex()
     {
+        $this->layout = 'layout_edufacil';
         $turmas = null;
 
-        $id_professor = Yii::$app->user->getIdentity()->professores;
-        $id_aluno = Yii::$app->user->getIdentity()->alunos;
+        $id_professor = Yii::$app->user->getIdentity()->professores ?? null;
+        $id_aluno = Yii::$app->user->getIdentity()->alunos ?? null;
 
-        //var_dump($id_aluno,$id_professor);die;
 
-        if (is_null($id_professor) && is_null($id_aluno)) {
+        if (sizeof($id_professor) == 0 && sizeof($id_aluno) == 0) {
             return $this->redirect(["site/index", "user" => "nao_autenticado"]);
         }
 
-        if (!is_null($id_professor)) {
-            $turmas = Turma::find()->where(["tur_id_pro" => $id_professor])->all();
+        if (sizeof($id_professor) != 0) {
+            $turmas = Turma::find()->where(["tur_id_pro" => $id_professor[0]->pro_id_pro])->all();
         }
 
-        if (!is_null($id_aluno)) {
-            $aluno = Alunos::find()->where(["alu_id_alu" => $id_aluno])->one();
+        if (sizeof($id_aluno) != 0) {
+            $aluno = Alunos::find()->where(["alu_id_alu" => $id_aluno[0]->alu_id_alu])->one();
             if (!is_null($aluno["alu_id_tur"])) {
                 $turmas = Turma::find()->where(["tur_id_tur" => $aluno["alu_id_tur"]])->all();
             }
@@ -90,7 +90,7 @@ class TurmaController extends Controller
 
     public function actionCadastraTurma()
     {
-        if (is_null(Yii::$app->professor->getIdentity())) {
+        if (sizeof(Yii::$app->user->getIdentity()->professores) == 0) {
             return $this->redirect(["index"]);
         }
         if (Yii::$app->request->isPost) {
@@ -101,7 +101,7 @@ class TurmaController extends Controller
                 $nomeTurma = filter_var(Yii::$app->request->post("Turma")["tur_nom_turma"], FILTER_SANITIZE_SPECIAL_CHARS);
 
                 $turma->tur_nom_turma = $nomeTurma;
-                $turma->tur_id_pro = Yii::$app->professor->getIdentity()->pro_id_pro;
+                $turma->tur_id_pro = Yii::$app->user->getIdentity()->professores[0]->pro_id_pro;
 
                 if (!$turma->save()) {
                     $transaction->rollBack();
@@ -122,22 +122,24 @@ class TurmaController extends Controller
      * Displays a single Turma model.
      * @return mixed
      * @throws Exception
+     * @throws \Throwable
      */
     public function actionView()
     {
+
         $turmas = null;
 
-        $id_professor = Yii::$app->professor->getIdentity();
+        $id_professor = Yii::$app->user->getIdentity()->professores;
 
 
-        if (is_null($id_professor)) {
-            return $this->redirect(["site/index", "user" => "nao_autenticado"]);
+        if (sizeof($id_professor) == 0) {
+            return $this->redirect(["turma/index", "user" => "não autorizado"]);
         }
 
         $id_turma = Yii::$app->request->get("turma");
 
         $turma = Turma::findOne($id_turma);
-        $alunos = Alunos::find()->where(["is", "alu_id_tur", null])->all();
+        $alunos = Alunos::buscarAlunosNaoVinculados();
 
         $alunosVinculadosATurma = Turma::getAlunosVinculadosTurma($turma->tur_id_tur);
 
@@ -158,6 +160,7 @@ class TurmaController extends Controller
 
         $aluno = Alunos::findOne($id_aluno);
         $turma = Turma::findOne($id_turma);
+
         $transaction = Yii::$app->db->beginTransaction();
         try {
             $aluno->alu_id_tur = $id_turma;

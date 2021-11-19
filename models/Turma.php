@@ -91,7 +91,10 @@ class Turma extends \yii\db\ActiveRecord
      */
     public static function getAlunosVinculadosTurma(int $id_turma)
     {
-        $sql = "SELECT * FROM alunos LEFT JOIN notas ON not_id_alu = alu_id_alu WHERE alu_id_tur = $id_turma";
+        $sql = "SELECT * FROM alunos 
+                LEFT JOIN usuarios ON usu_id_usu = alu_id_usu
+                LEFT JOIN notas ON not_id_alu = alu_id_alu               
+                WHERE alu_id_tur = $id_turma";
         return Yii::$app->db->createCommand($sql)->queryAll();
     }
 }

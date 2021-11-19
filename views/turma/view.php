@@ -22,8 +22,8 @@
             <tbody>
             <?php if (sizeof($alunosVinculadosATurma) > 0) { ?>
                 <?php foreach ($alunosVinculadosATurma as $alunoTurma) : ?>
-                    <tr>
-                        <td><?= $alunoTurma["alu_nome_alunos"]; ?></td>
+                    <tr >
+                        <td><?= $alunoTurma["usu_nom_usuario"]; ?></td>
                         <td><?= $alunoTurma["alu_id_alu"]; ?></td>
                         <td><?= $alunoTurma["not_valor_nota"]; ?></td>
                     </tr>
@@ -59,7 +59,7 @@
                         <?php if (sizeof($alunos) > 0) { ?>
                             <?php foreach ($alunos as $aluno) : ?>
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <span class="list-group-item-text"><?= $aluno["alu_nome_alunos"]; ?></span>
+                                    <span class="list-group-item-text"><?= $aluno["usu_nom_usuario"]; ?></span>
                                     <span class="list-group-item-text">
                                     <i class="fas fa-plus-square fa-2x vincular-aluno" id="<?= $aluno["alu_id_alu"] ?>"> </i>
                                 </span>
@@ -94,6 +94,7 @@
         .vincular-aluno{
             cursor: pointer;
         }
+
 
     </style>
 

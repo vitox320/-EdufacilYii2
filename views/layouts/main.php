@@ -40,13 +40,28 @@ AppAsset::register($this);
 </main>
 
 
-<footer class="footer mt-auto py-3 text-muted">
-    <div class="container text-center">
+<?php
+$user = Yii::$app->request->get("user");
+if ($user == "aluno") {
+    ?>
+    <footer class="footer mt-auto py-3 text-muted">
+        <div class="container text-center">
 
-        <p class="text-white">Edufácil <?= date('Y') ?></p>
+            <p class="text-white">Edufácil <?= date('Y') ?></p>
 
-    </div>
-</footer>
+        </div>
+    </footer>
+<?php } ?>
+
+<?php if ($user == "professor") { ?>
+    <footer class="footer mt-auto py-3 text-muted " style="background-color: #28a745 !important;">
+        <div class="container text-center">
+
+            <p class="text-white">Edufácil <?= date('Y') ?></p>
+
+        </div>
+    </footer>
+<?php } ?>
 
 <?php $this->endBody() ?>
 </body>

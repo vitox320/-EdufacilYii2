@@ -49,10 +49,17 @@ class TestesController extends Controller
     {
         /*$searchModel = new TestesSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);*/
+        try {
+            $id_turma = Yii::$app->request->get("turma");
+            $valida_id = filter_var($id_turma, FILTER_SANITIZE_SPECIAL_CHARS);
+            $testes = Testes::find()->where(["tes_id_tur" => $valida_id])->all();
+        } catch (Exception $ex) {
+            Yii::$app->session->setFlash("danger", $ex->getMessage());
+        }
 
-        $testes = Testes::find()->all();
+
         return $this->render('index', [
-            'testes' => $testes
+            'testes' => $testes ?? null
         ]);
     }
 
@@ -65,7 +72,7 @@ class TestesController extends Controller
         try {
             $id_teste = Yii::$app->request->get("id_teste");
             $enunciados = Enunciados::find()->where(["enu_id_tes" => $id_teste])->all();
-            $id_aluno = Yii::$app->aluno->getIdentity()->alu_id_alu;
+            $id_aluno = Yii::$app->user->getIdentity()->alunos[0]->alu_id_alu;
             if (!filter_var($id_teste, FILTER_SANITIZE_SPECIAL_CHARS)) {
                 return $this->redirect(["ver-teste", "error" => "Id Inválido"]);
             }
@@ -105,7 +112,7 @@ class TestesController extends Controller
                 }
 
                 $notas = new Notas();
-                $notas->not_id_alu = Yii::$app->aluno->getIdentity()->alu_id_alu;
+                $notas->not_id_alu = Yii::$app->user->getIdentity()->alunos[0]->alu_id_alu;
                 $notas->not_id_tes = $id_teste;
                 $notas->not_valor_nota = $valorProva;
                 if (!$notas->save()) {
@@ -139,17 +146,16 @@ class TestesController extends Controller
         $todasAsTurmasOptions = Turma::buscaTodasAsTurmas();
         $enunciados = new Enunciados();
 
-        $id_professor = Yii::$app->professor->getIdentity();
-        $id_aluno = Yii::$app->aluno->getIdentity();
+        $id_professor = Yii::$app->user->getIdentity()->alunos;
+        $id_aluno = Yii::$app->user->getIdentity()->professores;
 
-        if (is_null($id_professor) && is_null($id_aluno)) {
+        if (sizeof($id_professor) == 0 && sizeof($id_aluno) == 0) {
             return $this->redirect(["site/index", "user" => "nao_autenticado"]);
         }
 
         if (Yii::$app->request->isPost) {
             $quantidadeEnunciados = sizeof(Yii::$app->request->post("Enunciados")["enu_nom_enunciado"]);
             $quantidadeAlternativas = sizeof(Yii::$app->request->post("TesteQuestoes")["tqu_alternativa"]);
-
 
             $titulo = Yii::$app->request->post("Testes")["tes_nome_teste"];
             $turma = Yii::$app->request->post("Turma")["tur_id_tur"];

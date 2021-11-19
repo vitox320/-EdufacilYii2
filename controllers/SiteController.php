@@ -83,7 +83,7 @@ class SiteController extends Controller
                 }
 
                 $valida_senha = Yii::$app->getSecurity()->validatePassword($senhaUsuario, $usuarios->usu_senha_usuario);
-                if ($valida_senha != true) {
+                if (!$valida_senha) {
                     throw new \Exception("Senha Incorreta");
                 }
 

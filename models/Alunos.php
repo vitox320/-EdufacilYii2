@@ -103,4 +103,15 @@ class Alunos extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Notas::className(), ['not_id_alu' => 'alu_id_alu']);
     }
+
+    /**
+     * @throws \yii\db\Exception
+     */
+    public static function buscarAlunosNaoVinculados()
+    {
+        $sql = "SELECT * FROM usuarios 
+				JOIN alunos ON usu_id_usu = alu_id_usu
+				WHERE alu_id_tur IS  NULL";
+        return Yii::$app->db->createCommand($sql)->queryAll();
+    }
 }

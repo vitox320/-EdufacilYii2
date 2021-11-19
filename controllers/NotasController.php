@@ -6,6 +6,7 @@ use app\models\Alunos;
 use app\models\Notas;
 use app\models\NotasSearch;
 use app\models\Turma;
+use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -39,13 +40,13 @@ class NotasController extends Controller
      */
     public function actionIndex()
     {
-        $id_aluno = \Yii::$app->aluno->getIdentity();
+        $id_aluno = Yii::$app->user->getIdentity()->alunos;
 
         $notas = null;
         $turmas = null;
 
-        if (!is_null($id_aluno)) {
-            $aluno = Alunos::find()->where(["alu_id_alu" => $id_aluno->alu_id_alu])->one();
+        if (sizeof($id_aluno) != 0) {
+            $aluno = Alunos::find()->where(["alu_id_alu" => $id_aluno[0]->alu_id_alu])->one();
             if (!is_null($aluno["alu_id_tur"])) {
                 $turmas = Turma::find()->where(["tur_id_tur" => $aluno["alu_id_tur"]])->all();
             }

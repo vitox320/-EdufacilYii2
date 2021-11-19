@@ -30,9 +30,11 @@ $this->title = 'Notas';
                     $contagemNotas = 0;
                     foreach ($notas as $nota): ?>
                         <div class="informacoes-notas">
-                            <h3><?= $nota["tes_unidade_tes"] ?? null ?></h3>
+                            <h3>A<?= $nota["tes_unidade_teste"] ?? null ?> </h3>
+
                             <h3><?= $nota["not_valor_nota"] ?? null ?></h3>
                         </div>
+
                         <?php
                         $contagemNotas += $nota["not_valor_nota"];
                     endforeach; ?>
