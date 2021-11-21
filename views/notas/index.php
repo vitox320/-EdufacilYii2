@@ -25,7 +25,7 @@ $this->title = 'Notas';
             <div class="col-md-4 ">
                 <label for="" style="color: #506580; "><h3><?= $turma["tur_nom_turma"]; ?></h3></label>
                 <div class="shadow notas">
-                    <?php $notas = Notas::buscarNotasDasTurmas($turma["tur_id_tur"]); ?>
+                    <?php $notas = Notas::buscarNotasDasTurmas($turma["tur_id_tur"],$aluno["alu_id_alu"]); ?>
                     <?php
                     $contagemNotas = 0;
                     foreach ($notas as $nota): ?>

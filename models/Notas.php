@@ -54,12 +54,14 @@ class Notas extends \yii\db\ActiveRecord
     /**
      * @throws \yii\db\Exception
      */
-    public static function buscarNotasDasTurmas(int $id_turma)
+    public static function buscarNotasDasTurmas(int $id_turma,int $id_aluno)
     {
         $sql = "SELECT * FROM notas 
                 LEFT JOIN testes ON tes_id_tes = not_id_tes
                 LEFT JOIN turma ON tes_id_tur = tur_id_tur
-                WHERE tes_id_tur = $id_turma";
+				LEFT JOIN alunos ON alu_id_tur = tur_id_tur
+				LEFT JOIN usuarios ON alu_id_usu = usu_id_usu
+                WHERE tes_id_tur = $id_turma AND alu_id_alu = $id_aluno";
 
         return Yii::$app->db->createCommand($sql)->queryAll();
     }

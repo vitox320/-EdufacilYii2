@@ -1,7 +1,7 @@
 <?php
 
 use yii\bootstrap4\ActiveForm;
-
+$this->title = 'Cadastro';
 ?>
 
 <?php $form = ActiveForm::begin([

@@ -10,6 +10,7 @@ use app\models\UsuariosSearch;
 use Exception;
 use Yii;
 use yii\base\BaseObject;
+use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -21,6 +22,7 @@ class UsuariosController extends Controller
 {
 
     public $layout = 'layout_edufacil';
+
     /**
      * @inheritDoc
      */
@@ -29,6 +31,18 @@ class UsuariosController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => AccessControl::className(),
+                    'user' => 'user',
+                    'only' => ['index'],
+                    'rules' => [
+                        [
+                            'actions' => ['index'],
+                            'allow' => true,
+                            'roles' => ['@'],
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::className(),
                     'actions' => [
@@ -47,7 +61,9 @@ class UsuariosController extends Controller
     {
         $searchModel = new UsuariosSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-
+        if (sizeof(Yii::$app->user->getIdentity()->professores) == 0) {
+            $this->redirect(["site/index"]);
+        }
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
@@ -113,14 +129,14 @@ class UsuariosController extends Controller
                 if ($user == "aluno") {
                     $alunos = new Alunos();
                     $alunos->alu_id_usu = $usuarios->usu_id_usu;
-                    if(!$alunos->save()){
+                    if (!$alunos->save()) {
                         throw new Exception(UtilText::msgTextException($alunos, "Alunos"));
                     }
                 }
                 if ($user == "professor") {
                     $professores = new Professores();
                     $professores->pro_id_usu = $usuarios->usu_id_usu;
-                    if(!$professores->save()){
+                    if (!$professores->save()) {
                         throw new Exception(UtilText::msgTextException($professores, "Professores"));
                     }
                 }

@@ -57,16 +57,18 @@ class NotasController extends Controller
 
         $notas = null;
         $turmas = null;
-
+        $aluno = null;
         if (sizeof($id_aluno) != 0) {
             $aluno = Alunos::find()->where(["alu_id_alu" => $id_aluno[0]->alu_id_alu])->one();
             if (!is_null($aluno["alu_id_tur"])) {
-                $turmas = Turma::find()->where(["tur_id_tur" => $aluno["alu_id_tur"]])->all();
+                $id_aluno = $aluno["alu_id_tur"];
+                $turmas = Yii::$app->db->createCommand("select * from turma left join alunos on tur_id_tur = alu_id_tur where alu_id_alu = $id_aluno")->queryAll();
             }
         }
         return $this->render('index', [
             "notas" => $notas ?? null,
-            "turmas" => $turmas ?? null
+            "turmas" => $turmas ?? null,
+            "aluno" => $aluno ?? null
         ]);
     }
 
