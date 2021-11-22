@@ -28,7 +28,7 @@ $this->registerCssFile("@web/css/turmas/turma.css");
         <div class="row d-flex justify-content-center mt-5">
             <?php if (!is_null($turmas)) { ?>
                 <?php foreach ($turmas as $turma): ?>
-                    <div class="col-md-4">
+                    <div class="col-md-4 mt-3">
                         <?php
                         if (sizeof(Yii::$app->user->getIdentity()->professores) != 0) {
                             $url = "turma/view";

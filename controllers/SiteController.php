@@ -74,6 +74,9 @@ class SiteController extends Controller
             $senhaUsuario = Yii::$app->request->post("LoginForm")["password"];
 
             try {
+               /* if (!filter_var($emailUsuario, FILTER_SANITIZE_SPECIAL_CHARS)) {
+                    throw new \Exception("Email Inválido");
+                }*/
 
                 $usuarios = Usuarios::find()->where(["usu_email_usuario" => $emailUsuario])->one();
 
